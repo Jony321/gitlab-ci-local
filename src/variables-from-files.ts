@@ -60,11 +60,13 @@ export class VariablesFromFiles {
             const {type, values} = unpack(val);
             for (const [matcher, content] of Object.entries(values)) {
                 assert(typeof content == "string", `${key}.${matcher} content must be text or multiline text`);
-                if (type === "variable" || (type === null && !/^[/|~]/.exec(content))) {
-                    const regexp = matcher === "*" ? /.*/g : new RegExp(`^${matcher.replace(/\*/g, ".*")}$`, "g");
+                // if (type === "variable" || (type === null && !/^[\|~]/.exec(content))) {
+                if (type === "variable" || (type === null && !/^~/.exec(content))) {    
+                const regexp = matcher === "*" ? /.*/g : new RegExp(`^${matcher.replace(/\*/g, ".*")}$`, "g");
                     variables[key] = variables[key] ?? {type: "variable", environments: []};
                     variables[key].environments.push({content, regexp, regexpPriority: matcher.length, scopePriority});
-                } else if (type === null && /^[/|~]/.exec(content)) {
+                // } else if (type === null && /^[/|~]/.exec(content)) {
+                } else if (type === null && /^~/.exec(content)) {
                     const fileSource = content.replace(/^~\/(.*)/, `${homeDir}/$1`);
                     const regexp = matcher === "*" ? /.*/g : new RegExp(`^${matcher.replace(/\*/g, ".*")}$`, "g");
                     variables[key] = variables[key] ?? {type: "file", environments: []};
